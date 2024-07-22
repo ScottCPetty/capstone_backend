@@ -6,7 +6,7 @@ const prisma = new PrismaClient();
 async function seedUsers(numUsers) {
   try {
     const usersToCreate = Array.from({ length: numUsers }).map(() => ({
-      email: faker.internet.email().toLowerCase(),
+      username: faker.internet.userName(),
       password: faker.internet.password(),
       createdAt: faker.date.past(),
       updatedAt: new Date(),
