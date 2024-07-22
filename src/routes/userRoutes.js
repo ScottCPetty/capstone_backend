@@ -27,9 +27,6 @@ router.get("/:id", authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const user = await getSingleUser(id);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
