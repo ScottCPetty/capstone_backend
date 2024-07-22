@@ -6,6 +6,7 @@ const registerQuery = async ({ username, password }) => {
     data: {
       username,
       password: hashPassword,
+      isAdmin,
     },
   });
   const token = jwt.sign(
