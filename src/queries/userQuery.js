@@ -1,10 +1,10 @@
 const { bcrypt, prisma, jwt, uuid } = require("../shared/shared");
 
-const registerQuery = async ({ email, password }) => {
+const registerQuery = async ({ username, password }) => {
   const hashPassword = await bcrypt.hash(password, 10);
   const registerUser = await prisma.user.create({
     data: {
-      email,
+      username,
       password: hashPassword,
     },
   });
@@ -21,11 +21,11 @@ const registerQuery = async ({ email, password }) => {
 };
 
 // login function
-const loginQuery = async ({ email, password }) => {
-  //search user by email
+const loginQuery = async ({ username, password }) => {
+  //search user by username
   const loginUser = await prisma.user.findUnique({
     where: {
-      email,
+      username,
     },
   });
 
@@ -67,14 +67,14 @@ const deleteUser = async (id) => {
   return user;
 };
 
-const updateUser = async (id, email, password) => {
+const updateUser = async (id, username, password) => {
   const hashPassword = await bcrypt.hash(password, 10);
   const user = await prisma.user.update({
     where: {
       id,
     },
     data: {
-      email,
+      username,
       password: hashPassword,
     },
   });
