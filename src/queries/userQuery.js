@@ -62,7 +62,7 @@ const getSingleUser = async () => {
 };
 
 // get all users
-const getAllUser = async () => {
+const getAllUsers = async () => {
   const users = await prisma.user.findMany();
   return users;
 };
