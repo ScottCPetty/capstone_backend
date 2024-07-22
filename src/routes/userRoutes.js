@@ -16,7 +16,7 @@ router.post("/login", login);
 // Secure the getAllUser route with the authentication middleware
 router.get("/all", authenticateToken, async (req, res) => {
   try {
-    const users = await getAllUser();
+    const users = await getAllUsers();
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
