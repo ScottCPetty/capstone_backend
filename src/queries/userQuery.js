@@ -28,17 +28,13 @@ const loginQuery = async ({ username, password }) => {
       username,
     },
   });
-
   if (!loginUser) {
     throw new Error("User not found");
   }
-
   const isPasswordValid = await bcrypt.compare(password, loginUser.password);
-
   if (!isPasswordValid) {
     throw new Error("Invalid password");
   }
-
   const token = jwt.sign(
     {
       id: loginUser.id,
@@ -48,11 +44,11 @@ const loginQuery = async ({ username, password }) => {
       expiresIn: "1h",
     }
   );
-
   return token;
 };
+
 // get single user
-const getSingleUser = async () => {
+const getSingleUser = async (id) => {
   const user = await prisma.user.findUnique({
     where: {
       id,
