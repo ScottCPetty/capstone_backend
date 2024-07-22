@@ -1,6 +1,6 @@
 const { bcrypt, prisma, jwt, uuid } = require("../shared/shared");
 
-const registerQuery = async ({ username, password }) => {
+const registerQuery = async ({ username, password, isAdmin }) => {
   const hashPassword = await bcrypt.hash(password, 10);
   const registerUser = await prisma.user.create({
     data: {
