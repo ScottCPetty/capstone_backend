@@ -94,7 +94,7 @@ const updateUser = async (id, username, password) => {
 module.exports = {
   registerQuery,
   loginQuery,
-  getAllUser,
+  getAllUsers,
   deleteUser,
   updateUser,
   getSingleUser,
