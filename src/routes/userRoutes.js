@@ -49,8 +49,8 @@ router.delete("/:id", authenticateToken, async (req, res) => {
 router.put("/:id", authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const { email, password } = req.body;
-    const user = await updateUser(id, email, password);
+    const { username, password } = req.body;
+    const user = await updateUser(id, username, password);
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
