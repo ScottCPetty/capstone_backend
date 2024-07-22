@@ -53,6 +53,15 @@ const loginQuery = async ({ email, password }) => {
 
   return token;
 };
+// get single user
+const getSingleUser = async () => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+  return user;
+};
 
 // get all users
 const getAllUser = async () => {
@@ -92,4 +101,5 @@ module.exports = {
   getAllUser,
   deleteUser,
   updateUser,
+  getSingleUser,
 };
