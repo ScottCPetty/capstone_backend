@@ -1,7 +1,7 @@
 const express = require("express");
 const { register, login } = require("../controllers/userControllers");
 const {
-  getAllUser,
+  getAllUsers,
   updateUser,
   deleteUser,
   getSingleUser,
