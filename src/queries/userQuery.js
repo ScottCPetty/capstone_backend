@@ -48,6 +48,26 @@ const loginQuery = async ({ username, password }) => {
   return token;
 };
 
+// get logged in user
+const getLoggedInUser = async (header) => {
+  const token = header?.split(" ")[1];
+  let id = "";
+  try {
+    const payload = await jwt.verify(token, process.env.WEB_TOKEN);
+    id = payload.id;
+  } catch (ex) {
+    const error = Error("Not Authorized");
+    error.status = 404;
+    throw error;
+  }
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+  return user;
+};
+
 // get single user
 const getSingleUser = async (id) => {
   const user = await prisma.user.findUnique({
@@ -91,6 +111,7 @@ const updateUser = async (id, username, password) => {
 module.exports = {
   registerQuery,
   loginQuery,
+  getLoggedInUser,
   getAllUsers,
   deleteUser,
   updateUser,
