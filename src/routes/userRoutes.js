@@ -1,6 +1,7 @@
 const express = require("express");
 const { register, login } = require("../controllers/userControllers");
 const {
+  getLoggedInUser,
   getAllUsers,
   updateUser,
   deleteUser,
@@ -12,6 +13,15 @@ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
+
+router.get("/me", authenticateToken, async (req, res) => {
+  try {
+    const user = await getLoggedInUser(req.headers.authorization);
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // Secure the getAllUser route with the authentication middleware
 router.get("/all", authenticateToken, async (req, res) => {
