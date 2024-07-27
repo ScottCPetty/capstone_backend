@@ -41,7 +41,7 @@ router.get("/me", authenticateToken, async (req, res) => {
 });
 
 // Secure the getAllUser route with the authentication middleware
-router.get("/all", authenticateToken, async (req, res) => {
+router.get("/all", async (req, res) => {
   try {
     const users = await getAllUsers();
     res.json(users);
@@ -50,7 +50,7 @@ router.get("/all", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/:id", authenticateToken, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const user = await getSingleUser(id);
