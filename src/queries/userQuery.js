@@ -1,25 +1,30 @@
 const { bcrypt, prisma, jwt, uuid } = require("../shared/shared");
 
 const registerQuery = async ({ username, password, isAdmin }) => {
-  const hashPassword = await bcrypt.hash(password, 10);
-  const registerUser = await prisma.user.create({
-    data: {
-      username,
-      password: hashPassword,
-      isAdmin,
-    },
-  });
-  const token = jwt.sign(
-    {
-      id: registerUser.id,
-    },
-    process.env.WEB_TOKEN,
-    {
-      expiresIn: "1h",
-    }
-  );
-  return token;
+  try {
+    const hashPassword = await bcrypt.hash(password, 10);
+    const registerUser = await prisma.user.create({
+      data: {
+        username,
+        password: hashPassword,
+        isAdmin,
+      },
+    });
+    const token = jwt.sign(
+      {
+        id: registerUser.id,
+      },
+      process.env.WEB_TOKEN,
+      {
+        expiresIn: "1h",
+      }
+    );
+    return token;
+  } catch (error) {
+    throw new Error("Error registering user: " + error.message);
+  }
 };
+
 
 // login function
 const loginQuery = async ({ username, password }) => {
