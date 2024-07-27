@@ -1,6 +1,7 @@
 const express = require("express");
-const { register, login } = require("../controllers/userControllers");
 const {
+  registerQuery,
+  loginQuery,
   getLoggedInUser,
   getAllUsers,
   updateUser,
@@ -11,8 +12,24 @@ const authenticateToken = require("../middleware/authenticateToken");
 
 const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
+router.post("/register", async (req, res) => {
+  try {
+    const token = await registerQuery(req.body);
+    res.send(token);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.post("/login", async (req, res) => {
+  try {
+    const token = await loginQuery(req.body);
+    res.send(token);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 
 router.get("/me", authenticateToken, async (req, res) => {
   try {
