@@ -3,10 +3,11 @@ const {
   registerQuery,
   loginQuery,
   getLoggedInUser,
+  editScore,
   getAllUsers,
+  getSingleUser,
   updateUser,
   deleteUser,
-  getSingleUser,
 } = require("../queries/userQuery");
 const authenticateToken = require("../middleware/authenticateToken");
 
@@ -30,10 +31,19 @@ router.post("/login", async (req, res) => {
   }
 });
 
-
 router.get("/me", authenticateToken, async (req, res) => {
   try {
     const user = await getLoggedInUser(req.headers.authorization);
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.put("/me", authenticateToken, async (req, res) => {
+  try {
+    const { score } = req.body;
+    const user = await editScore(req.headers.authorization, score);
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -60,22 +70,22 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", authenticateToken, async (req, res) => {
-  try {
-    const { id } = req.params;
-    await deleteUser(id);
-    res.json(204);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
 router.put("/:id", authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { username, password } = req.body;
     const user = await updateUser(id, username, password);
     res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.delete("/:id", authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    await deleteUser(id);
+    res.json(204);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
