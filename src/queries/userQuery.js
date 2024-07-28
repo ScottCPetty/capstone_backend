@@ -25,10 +25,7 @@ const registerQuery = async ({ username, password, isAdmin }) => {
   }
 };
 
-
-// login function
 const loginQuery = async ({ username, password }) => {
-  //search user by username
   const loginUser = await prisma.user.findUnique({
     where: {
       username,
@@ -53,7 +50,6 @@ const loginQuery = async ({ username, password }) => {
   return token;
 };
 
-// get logged in user
 const getLoggedInUser = async (header) => {
   const token = header?.split(" ")[1];
   let id = "";
@@ -73,24 +69,35 @@ const getLoggedInUser = async (header) => {
   return user;
 };
 
-// get single user
-const getSingleUser = async (id) => {
-  const user = await prisma.user.findUnique({
+const editScore = async (header, score) => {
+  const token = header?.split(" ")[1];
+  let id = "";
+  try {
+    const payload = await jwt.verify(token, process.env.WEB_TOKEN);
+    id = payload.id;
+  } catch (ex) {
+    const error = Error("Not Authorized");
+    error.status = 404;
+    throw error;
+  }
+  const user = await prisma.user.update({
     where: {
       id,
+    },
+    data: {
+      score,
     },
   });
   return user;
 };
 
-// get all users
 const getAllUsers = async () => {
   const users = await prisma.user.findMany();
   return users;
 };
 
-const deleteUser = async (id) => {
-  const user = await prisma.user.delete({
+const getSingleUser = async (id) => {
+  const user = await prisma.user.findUnique({
     where: {
       id,
     },
@@ -112,13 +119,22 @@ const updateUser = async (id, username, password) => {
   return user;
 };
 
-// export
+const deleteUser = async (id) => {
+  const user = await prisma.user.delete({
+    where: {
+      id,
+    },
+  });
+  return user;
+};
+
 module.exports = {
   registerQuery,
   loginQuery,
   getLoggedInUser,
+  editScore,
   getAllUsers,
-  deleteUser,
-  updateUser,
   getSingleUser,
+  updateUser,
+  deleteUser,
 };
