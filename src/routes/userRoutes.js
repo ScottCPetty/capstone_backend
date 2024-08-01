@@ -63,6 +63,7 @@ router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const user = await getSingleUser(id);
+    console.log("Fetched single user data:", user); //
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
