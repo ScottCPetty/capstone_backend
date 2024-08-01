@@ -8,6 +8,7 @@ const registerQuery = async ({ username, password, isAdmin }) => {
         username,
         password: hashPassword,
         isAdmin,
+        portrait,
       },
     });
     const token = jwt.sign(
@@ -107,16 +108,22 @@ const getSingleUser = async (id) => {
 
 const updateUser = async (id, username, password) => {
   const hashPassword = await bcrypt.hash(password, 10);
-  const user = await prisma.user.update({
-    where: {
-      id,
-    },
-    data: {
-      username,
-      password: hashPassword,
-    },
-  });
-  return user;
+  try {
+    const user = await prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        username,
+        password: hashPassword,
+        portrait,
+      },
+    });
+    return user;
+  } catch (error) {
+    console.error("Error updating user in database:", error);
+    throw error;
+  }
 };
 
 const deleteUser = async (id) => {
