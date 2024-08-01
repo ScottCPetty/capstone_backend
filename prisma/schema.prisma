@@ -19,6 +19,7 @@ model User {
   password String
   isAdmin Boolean @default(false)
   score Int @default(0)
+  portrait String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

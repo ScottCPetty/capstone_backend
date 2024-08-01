@@ -1,29 +1,32 @@
 const { bcrypt, prisma, jwt, uuid } = require("../shared/shared");
 
 const registerQuery = async ({ username, password, isAdmin }) => {
-  const hashPassword = await bcrypt.hash(password, 10);
-  const registerUser = await prisma.user.create({
-    data: {
-      username,
-      password: hashPassword,
-      isAdmin,
-    },
-  });
-  const token = jwt.sign(
-    {
-      id: registerUser.id,
-    },
-    process.env.WEB_TOKEN,
-    {
-      expiresIn: "1h",
-    }
-  );
-  return token;
+  try {
+    const hashPassword = await bcrypt.hash(password, 10);
+    const registerUser = await prisma.user.create({
+      data: {
+        username,
+        password: hashPassword,
+        isAdmin,
+        portrait,
+      },
+    });
+    const token = jwt.sign(
+      {
+        id: registerUser.id,
+      },
+      process.env.WEB_TOKEN,
+      {
+        expiresIn: "1h",
+      }
+    );
+    return token;
+  } catch (error) {
+    throw new Error("Error registering user: " + error.message);
+  }
 };
 
-// login function
 const loginQuery = async ({ username, password }) => {
-  //search user by username
   const loginUser = await prisma.user.findUnique({
     where: {
       username,
@@ -48,7 +51,6 @@ const loginQuery = async ({ username, password }) => {
   return token;
 };
 
-// get logged in user
 const getLoggedInUser = async (header) => {
   const token = header?.split(" ")[1];
   let id = "";
@@ -68,7 +70,33 @@ const getLoggedInUser = async (header) => {
   return user;
 };
 
-// get single user
+const editScore = async (header, score) => {
+  const token = header?.split(" ")[1];
+  let id = "";
+  try {
+    const payload = await jwt.verify(token, process.env.WEB_TOKEN);
+    id = payload.id;
+  } catch (ex) {
+    const error = Error("Not Authorized");
+    error.status = 404;
+    throw error;
+  }
+  const user = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      score,
+    },
+  });
+  return user;
+};
+
+const getAllUsers = async () => {
+  const users = await prisma.user.findMany();
+  return users;
+};
+
 const getSingleUser = async (id) => {
   const user = await prisma.user.findUnique({
     where: {
@@ -78,10 +106,24 @@ const getSingleUser = async (id) => {
   return user;
 };
 
-// get all users
-const getAllUsers = async () => {
-  const users = await prisma.user.findMany();
-  return users;
+const updateUser = async (id, username, password) => {
+  const hashPassword = await bcrypt.hash(password, 10);
+  try {
+    const user = await prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        username,
+        password: hashPassword,
+        portrait,
+      },
+    });
+    return user;
+  } catch (error) {
+    console.error("Error updating user in database:", error);
+    throw error;
+  }
 };
 
 const deleteUser = async (id) => {
@@ -93,27 +135,13 @@ const deleteUser = async (id) => {
   return user;
 };
 
-const updateUser = async (id, username, password) => {
-  const hashPassword = await bcrypt.hash(password, 10);
-  const user = await prisma.user.update({
-    where: {
-      id,
-    },
-    data: {
-      username,
-      password: hashPassword,
-    },
-  });
-  return user;
-};
-
-// export
 module.exports = {
   registerQuery,
   loginQuery,
   getLoggedInUser,
+  editScore,
   getAllUsers,
-  deleteUser,
-  updateUser,
   getSingleUser,
+  updateUser,
+  deleteUser,
 };

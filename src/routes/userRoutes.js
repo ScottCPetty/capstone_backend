@@ -1,18 +1,35 @@
 const express = require("express");
-const { register, login } = require("../controllers/userControllers");
 const {
+  registerQuery,
+  loginQuery,
   getLoggedInUser,
+  editScore,
   getAllUsers,
+  getSingleUser,
   updateUser,
   deleteUser,
-  getSingleUser,
 } = require("../queries/userQuery");
 const authenticateToken = require("../middleware/authenticateToken");
 
 const router = express.Router();
 
-router.post("/register", register);
-router.post("/login", login);
+router.post("/register", async (req, res) => {
+  try {
+    const token = await registerQuery(req.body);
+    res.send(token);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.post("/login", async (req, res) => {
+  try {
+    const token = await loginQuery(req.body);
+    res.send(token);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 router.get("/me", authenticateToken, async (req, res) => {
   try {
@@ -23,8 +40,17 @@ router.get("/me", authenticateToken, async (req, res) => {
   }
 });
 
-// Secure the getAllUser route with the authentication middleware
-router.get("/all", authenticateToken, async (req, res) => {
+router.put("/me", authenticateToken, async (req, res) => {
+  try {
+    const { score } = req.body;
+    const user = await editScore(req.headers.authorization, score);
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get("/all", async (req, res) => {
   try {
     const users = await getAllUsers();
     res.json(users);
@@ -33,10 +59,21 @@ router.get("/all", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/:id", authenticateToken, async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const user = await getSingleUser(id);
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.put("/:id", authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { username, password, portrait } = req.body;
+    const user = await updateUser(id, username, password, portrait);
     res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -48,17 +85,6 @@ router.delete("/:id", authenticateToken, async (req, res) => {
     const { id } = req.params;
     await deleteUser(id);
     res.json(204);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-router.put("/:id", authenticateToken, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { username, password } = req.body;
-    const user = await updateUser(id, username, password);
-    res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
