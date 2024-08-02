@@ -1,6 +1,6 @@
 const { bcrypt, prisma, jwt, uuid } = require("../shared/shared");
 
-const registerQuery = async ({ username, password, isAdmin }) => {
+const registerQuery = async ({ username, password, isAdmin, portrait }) => {
   try {
     const hashPassword = await bcrypt.hash(password, 10);
     const registerUser = await prisma.user.create({
@@ -106,7 +106,7 @@ const getSingleUser = async (id) => {
   return user;
 };
 
-const updateUser = async (id, username, password) => {
+const updateUser = async (id, username, password, portrait) => {
   const hashPassword = await bcrypt.hash(password, 10);
   try {
     const user = await prisma.user.update({
@@ -119,6 +119,7 @@ const updateUser = async (id, username, password) => {
         portrait,
       },
     });
+    console.log("Updated user:", user); //
     return user;
   } catch (error) {
     console.error("Error updating user in database:", error);
