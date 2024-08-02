@@ -17,7 +17,7 @@ const registerQuery = async ({ username, password, isAdmin }) => {
       },
       process.env.WEB_TOKEN,
       {
-        expiresIn: "1h",
+        expiresIn: "6h",
       }
     );
     return token;
@@ -45,7 +45,7 @@ const loginQuery = async ({ username, password }) => {
     },
     process.env.WEB_TOKEN,
     {
-      expiresIn: "1h",
+      expiresIn: "6h",
     }
   );
   return token;
