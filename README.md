@@ -4,7 +4,7 @@ It is made in Javascript and uses PostgreSQL and Prisma to:
 - create a table for users,
 - register and login,
 - edit scores, and
-- retrieve user information.
+- retrieve user information for a leaderboard.
 
 It was made in tandem with [this frontend](https://github.com/ScottCPetty/capstone_frontend).
 # Running Locally
